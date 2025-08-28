@@ -12,6 +12,7 @@ import { ShoppingCart, Rocket, Shield } from "lucide-react"
 
 export function LoginForm() {
   const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const { login } = useAuth()
 
@@ -19,17 +20,17 @@ export function LoginForm() {
     e.preventDefault()
     setError("")
 
-    const user = authenticateUser(email)
+    const user = authenticateUser(email, password)
     if (user) {
       login(user)
     } else {
-      setError("Invalid email. Try buyer@example.com, founder@example.com, or admin@example.com")
+      setError("Invalid credentials. Note: Password is same as email address.")
     }
   }
 
   const handleQuickLogin = (email: string) => {
     setError("")
-    const user = authenticateUser(email)
+    const user = authenticateUser(email, email) // Using email as password
     if (user) {
       login(user)
     }
@@ -44,14 +45,25 @@ export function LoginForm() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Input
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
+            <div className="space-y-4">
+              <div>
+                <Input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <Input
+                  type="password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
             <Button type="submit" className="w-full">

@@ -50,11 +50,20 @@ A comprehensive SaaS platform demo showcasing role-based dashboards for buyers, 
 
 ## Demo Accounts
 
-Use these email addresses to test different user roles, or click the quick login buttons on the login page:
+Use these credentials to test different user roles, or click the quick login buttons on the login page:
 
-- **Buyer**: `buyer@example.com` - Browse and purchase SaaS products
-- **Founder**: `founder@example.com` - Manage platform configuration and analytics
-- **Admin**: `admin@example.com` - Platform administration and monitoring
+- **Buyer**:
+  - Email: `buyer@example.com`
+  - Password: `buyer@example.com`
+  - Role: Browse and purchase SaaS products
+- **Founder**:
+  - Email: `founder@example.com`
+  - Password: `founder@example.com`
+  - Role: Manage platform configuration and analytics
+- **Admin**:
+  - Email: `admin@example.com`
+  - Password: `admin@example.com`
+  - Role: Platform administration and monitoring
 
 ## Project Structure
 
