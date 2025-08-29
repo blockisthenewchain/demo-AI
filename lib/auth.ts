@@ -4,6 +4,10 @@ export interface User {
   password: string
   name: string
   role: "buyer" | "founder" | "admin"
+  isDemo?: boolean
+  demoSessionId?: string
+  demoListingId?: string
+  demoExpiration?: number
 }
 
 export const mockUsers: User[] = [
@@ -36,4 +40,30 @@ export function authenticateUser(email: string, password: string): User | null {
     return null
   }
   return user
+}
+
+export interface DemoTokenPayload {
+  buyerEmail: string
+  demoSessionId: string
+  listingId: string
+  exp: number
+}
+
+export function createDemoUser(payload: DemoTokenPayload): User {
+  return {
+    id: `demo_${payload.demoSessionId}`,
+    email: payload.buyerEmail,
+    password: "", // Demo users don't need passwords
+    name: `Demo User (${payload.buyerEmail})`,
+    role: "buyer", // Demo users get buyer role
+    isDemo: true,
+    demoSessionId: payload.demoSessionId,
+    demoListingId: payload.listingId,
+    demoExpiration: payload.exp
+  }
+}
+
+export function isDemoSessionExpired(user: User): boolean {
+  if (!user.isDemo || !user.demoExpiration) return false
+  return Date.now() / 1000 > user.demoExpiration
 }

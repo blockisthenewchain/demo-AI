@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
 import type { User } from "@/lib/auth"
+import { isDemoSessionExpired } from "@/lib/auth"
 
 interface AuthContextType {
   user: User | null
@@ -17,10 +18,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
+    // Only run on client-side
+    if (typeof window === 'undefined') return
+
     // Check for stored user on mount
     const storedUser = localStorage.getItem("pilotstack-user")
     if (storedUser) {
-      setUser(JSON.parse(storedUser))
+      const parsedUser = JSON.parse(storedUser)
+      // Check if demo session is expired
+      if (parsedUser.isDemo && isDemoSessionExpired(parsedUser)) {
+        logout() // Automatically logout expired demo sessions
+      } else {
+        setUser(parsedUser)
+      }
     }
     setIsLoading(false)
   }, [])
