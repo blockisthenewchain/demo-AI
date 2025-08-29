@@ -3,39 +3,67 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {
-    // Get the token (we don't even need to verify it for demo purposes)
+    // Get the token from x-ps-demo-token header
     const token = req.headers.get('x-ps-demo-token');
     
     if (!token) {
+      console.error('Missing demo token');
       return NextResponse.json({ error: 'Missing token' }, { status: 401 });
     }
 
-    // For demo purposes, we can skip JWT verification to ensure it always works
-    // In production, you'd want to verify the JWT
-    
-    // Create a simple demo session
+    // Create demo session with more detailed user info
     const demoUser = {
-      id: 'demo-user',
+      id: 'demo-' + Date.now(),
       email: 'demo@pilotstack.app',
+      name: 'Demo User',
+      role: 'buyer',
       isDemo: true,
-      sessionId: 'demo-session-' + Date.now()
+      demoSessionId: 'session-' + Date.now(),
+      createdAt: new Date().toISOString()
     };
     
-    // Set demo session cookie and redirect
+    // Set session cookie and redirect headers
     const headers = new Headers();
-    headers.append('Set-Cookie', `demo-session=${JSON.stringify(demoUser)}; Path=/; HttpOnly; Secure; SameSite=None`);
+    
+    // Set a more detailed session cookie
+    headers.append(
+      'Set-Cookie', 
+      `pilotstack-demo-session=${JSON.stringify(demoUser)}; `+
+      `Path=/; `+
+      `HttpOnly; `+
+      `Secure; `+
+      `SameSite=None; `+
+      `Max-Age=3600`  // 1 hour expiry
+    );
+    
+    // Required: Set Location header for redirect
     headers.append('Location', '/');
     
-    return new NextResponse(null, { status: 302, headers });
+    // Important: Return 302 redirect status
+    return new NextResponse(null, { 
+      status: 302, 
+      headers 
+    });
     
   } catch (error) {
-    // Even if something goes wrong, return a working response
-    console.error('Demo endpoint error:', error);
+    console.error('Demo login error:', error);
     
+    // Fallback: still redirect with a basic session
     const headers = new Headers();
-    headers.append('Set-Cookie', 'demo-session=fallback; Path=/; HttpOnly; Secure; SameSite=None');
+    headers.append(
+      'Set-Cookie', 
+      'pilotstack-demo-session=fallback; '+
+      'Path=/; '+
+      'HttpOnly; '+
+      'Secure; '+
+      'SameSite=None; '+
+      'Max-Age=3600'
+    );
     headers.append('Location', '/');
     
-    return new NextResponse(null, { status: 302, headers });
+    return new NextResponse(null, { 
+      status: 302, 
+      headers 
+    });
   }
 }
