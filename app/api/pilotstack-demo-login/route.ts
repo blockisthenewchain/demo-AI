@@ -36,8 +36,8 @@ export async function POST(req: NextRequest) {
       `Max-Age=3600`  // 1 hour expiry
     );
     
-    // Required: Set Location header for redirect
-    headers.append('Location', '/');
+    // Redirect to buyer dashboard since the demo user is a buyer
+    headers.append('Location', '/dashboard/buyer');
     
     // Important: Return 302 redirect status
     return new NextResponse(null, { 
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
       'SameSite=None; '+
       'Max-Age=3600'
     );
-    headers.append('Location', '/');
+    headers.append('Location', '/dashboard/buyer');
     
     return new NextResponse(null, { 
       status: 302, 
