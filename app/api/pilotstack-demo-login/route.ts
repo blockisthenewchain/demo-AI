@@ -2,16 +2,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
+  console.log('=== Demo Login Endpoint Hit ===');
+  console.log('Request method:', req.method);
+  console.log('Request URL:', req.url);
+  console.log('Request headers:', Object.fromEntries(req.headers.entries()));
+  
   try {
-    // Get the token from x-ps-demo-token header
     const token = req.headers.get('x-ps-demo-token');
+    console.log('Demo token received:', !!token);
     
     if (!token) {
       console.error('Missing demo token');
       return NextResponse.json({ error: 'Missing token' }, { status: 401 });
     }
 
-    // Create demo session with more detailed user info
+    console.log('Creating demo user...');
     const demoUser = {
       id: 'demo-' + Date.now(),
       email: 'demo@pilotstack.app',
@@ -22,10 +27,9 @@ export async function POST(req: NextRequest) {
       createdAt: new Date().toISOString()
     };
     
-    // Set session cookie and redirect headers
-    const headers = new Headers();
+    console.log('Demo user created:', demoUser);
     
-    // Set a more detailed session cookie
+    const headers = new Headers();
     headers.append(
       'Set-Cookie', 
       `pilotstack-demo-session=${JSON.stringify(demoUser)}; `+
@@ -33,13 +37,12 @@ export async function POST(req: NextRequest) {
       `HttpOnly; `+
       `Secure; `+
       `SameSite=None; `+
-      `Max-Age=3600`  // 1 hour expiry
+      `Max-Age=3600`
     );
-    
-    // Redirect to buyer dashboard since the demo user is a buyer
     headers.append('Location', '/dashboard/buyer');
     
-    // Important: Return 302 redirect status
+    console.log('Returning 302 redirect with headers:', Object.fromEntries(headers.entries()));
+    
     return new NextResponse(null, { 
       status: 302, 
       headers 
@@ -48,7 +51,6 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('Demo login error:', error);
     
-    // Fallback: still redirect with a basic session
     const headers = new Headers();
     headers.append(
       'Set-Cookie', 
