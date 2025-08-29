@@ -6,9 +6,13 @@ const JWKS = createRemoteJWKSet(new URL('https://pilotstack.app/api/jwks'));
 
 export async function POST(req: NextRequest) {
   try {
-    const auth = req.headers.get('authorization') || '';
-    const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
-    if (!token) return NextResponse.json({ error: 'Missing token' }, { status: 401 });
+    // Check for token in x-ps-demo-token header first, then fallback to Authorization
+    const token = req.headers.get('x-ps-demo-token') || 
+                 req.headers.get('authorization')?.replace('Bearer ', '') || '';
+                 
+    if (!token) {
+      return NextResponse.json({ error: 'Missing token' }, { status: 401 });
+    }
 
     const { payload } = await jwtVerify(token, JWKS);
     
